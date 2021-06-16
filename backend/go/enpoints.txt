@@ -1,0 +1,31 @@
+Create event:
+{
+        "id":6,
+        "name":"prueba",
+        "discoteca_id":"1"
+}
+
+Create discoteca:
+{
+    "name":"prieba",
+    "company":"el gran melon"
+}
+
+Login:
+{
+    "user":{
+        "email":"xema_test@gmail.com",
+        "password":"123456789",
+        "username":"prueba?"
+    }
+}
+
+Register
+
+{
+    "user":{
+        "email":"tono@gmail.com",
+        "password":"123456789",
+        "username":"atontao"
+    }
+}

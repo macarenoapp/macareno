@@ -1,0 +1,107 @@
+version: '3'
+services:  
+# MICROSERVICES
+  discotecas:
+    extends:
+      file: microservices-go.yml
+      service: microservices
+    container_name: go_discotecas_container
+    volumes:
+      - ./go/discotecas:/go/src/goApp
+    labels:
+      traefik.http.routers.discotecas.rule: Host(`discotecas.docker.localhost`)
+    depends_on:
+      - mysql
+      - redis
+
+
+  entradas:
+    extends:
+      file: microservices-go.yml
+      service: microservices
+    container_name: go_entradas_container
+    volumes:
+      - ./go/entradas:/go/src/goApp
+    labels:
+      traefik.http.routers.entradas.rule: Host(`entradas.docker.localhost`)
+    depends_on:
+      - mysql
+      - redis
+
+  users:
+    extends:
+      file: microservices-go.yml
+      service: microservices
+    container_name: go_users_container
+    volumes:
+      - ./go/users:/go/src/goApp
+    labels:
+      traefik.http.routers.users.rule: Host(`users.docker.localhost`)
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - servidor_network 
+# END MICROSERVICES 
+
+# MYSQL
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_container
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456789
+      - MYSQL_DATABASE=gran_melon
+      - MYSQL_USER=xema
+      - MYSQL_PASSWORD=123456789
+    volumes:
+      - ./mySqlBackup:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - servidor_network
+
+# REDIS
+  redis:
+    image: redis:4.0
+    container_name: redis_container
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redisData:/data
+    networks:
+      - servidor_network
+
+# TRAEFIK
+  traefik:
+    image: traefik:v2.3
+    container_name: traefik_container
+    command: 
+    # configure traefik
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--entrypoints.web.address=:80"
+
+    # configure traefik metrics to prometheus
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000"
+
+    ports:
+      - 80:80
+      - 8080:8080
+      - 433:433
+    networks:
+      - servidor_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - "traefik.port=8080"
+    restart: always
+
+networks:
+  servidor_network:
+  mynet:
+    driver: bridge
+
+volumes:
+  grafana:

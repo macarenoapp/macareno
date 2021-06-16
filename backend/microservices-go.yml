@@ -1,0 +1,21 @@
+version: '3'
+services:
+  microservices:
+    image: golang:1.15
+    working_dir: /go/src/goApp
+    expose:
+      - 8080
+    command: >
+      bash -c " rm -f go.mod || true
+      && rm -f go.sum || true
+      && go mod init goApp
+      && go mod tidy
+      && go get github.com/jinzhu/gorm
+      && go get github.com/pilu/fresh
+      && fresh "
+    labels:
+      traefik.enable: true
+      traefik.docker.network: servidor_network
+      traefik.port: 8080
+    networks:
+      - servidor_network

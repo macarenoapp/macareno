@@ -1,0 +1,6 @@
+{
+    "require": {
+        "tymon/jwt-auth": "dev-develop",
+        "fruitcake/laravel-cors": "^2.0"
+    }
+}
